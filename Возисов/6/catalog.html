@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Каталог — URUS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Open Sans',Arial,sans-serif;background:#F5F5F5;color:#333;font-size:14px;line-height:1.45;min-height:100vh}
+h1,h2{font-family:'Montserrat',Arial,sans-serif;color:#1E3A5F;line-height:1.25;font-weight:600}
+h1{font-size:1.4rem;margin-bottom:16px}
+h2{font-size:1.05rem;margin-bottom:10px}
+a{color:#2980B9;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.header{background:#1E3A5F;color:#fff;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.06);gap:12px}
+.header__logo{font-family:'Montserrat',Arial,sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:1.5px}
+.header__right{display:flex;align-items:center;gap:18px;font-size:12px}
+.header__user{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:6px;background:rgba(255,255,255,.1)}
+.header__user-icon{width:24px;height:24px;border-radius:50%;background:#2980B9;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px}
+.header__right a{color:#fff;opacity:.85}
+.burger{display:none;background:none;border:none;color:#fff;padding:4px;font-size:20px}
+.layout{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{width:220px;background:#fff;border-right:1px solid #E5E7EB;padding:16px 10px;flex-shrink:0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.sidebar__group{margin-bottom:18px}
+.sidebar__title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#6B7280;padding:0 10px;margin-bottom:6px}
+.nav__link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;color:#333;font-size:13px;margin-bottom:2px;cursor:pointer;transition:background .2s}
+.nav__link:hover{background:#EEF2F7;color:#1E3A5F}
+.nav__link.active{background:#E9EDF2;color:#1E3A5F;font-weight:600}
+.content{flex:1;padding:22px;min-width:0;max-width:1400px}
+.card{background:#fff;border-radius:8px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:18px;border:1px solid #E5E7EB}
+.card__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 14px;border-radius:6px;border:1px solid transparent;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer}
+.btn--primary{background:#2980B9;color:#fff}
+.btn--primary:hover{background:#2471A3}
+.btn--outline{background:transparent;border-color:#2980B9;color:#2980B9}
+.btn--outline:hover{background:#EEF2F7}
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th{text-align:left;padding:9px 10px;background:#F0F2F5;color:#6B7280;font-size:10px;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #E5E7EB}
+.table td{padding:10px;border-bottom:1px solid #E5E7EB}
+.table tbody tr:hover{background:#F7F9FC}
+.badge{display:inline-block;padding:3px 8px;border-radius:3px;font-size:10px;font-weight:600;text-transform:uppercase}
+.badge--success{background:#E8F5E9;color:#2E7D32}
+.badge--danger{background:#FDECEA;color:#B03A2E}
+@media(max-width:900px){.burger{display:block}.sidebar{position:fixed;top:56px;left:0;height:calc(100vh - 56px);transform:translateX(-100%);transition:transform .3s;z-index:99}.sidebar.open{transform:none}.content{padding:14px}}
+</style>
+</head>
+<body>
+<header class="header">
+    <div style="display:flex;align-items:center;gap:12px">
+        <button class="burger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="header__logo">URUS</div>
+    </div>
+    <div class="header__right">
+        <div class="header__user"><div class="header__user-icon" id="userInitials">АД</div><span id="userLogin">admin</span></div>
+        <a href="index.html">Выход</a>
+    </div>
+</header>
+<div class="layout">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__group"><div class="sidebar__title">Работа</div>
+            <a class="nav__link" onclick="location.href='dashboard.html'">Рабочий стол</a>
+            <a class="nav__link active" onclick="location.href='catalog.html'">Каталог</a>
+            <a class="nav__link" onclick="location.href='readers.html'">Читатели</a>
+            <a class="nav__link" onclick="location.href='circulation.html'">Выдача и возврат</a>
+            <a class="nav__link" onclick="location.href='overdue.html'">Просрочки</a>
+        </div>
+        <div class="sidebar__group"><div class="sidebar__title">Аналитика</div>
+            <a class="nav__link" onclick="location.href='reports.html'">Отчёты</a>
+        </div>
+        <div class="sidebar__group"><div class="sidebar__title">Администрирование</div>
+            <a class="nav__link" onclick="location.href='admin.html'">Пользователи</a>
+            <a class="nav__link" onclick="location.href='add_user.html'">Добавить пользователя</a>
+            <a class="nav__link" onclick="location.href='settings.html'">Смена пароля</a>
+        </div>
+    </aside>
+    <main class="content">
+        <h1>Каталог книг</h1>
+        <div class="card">
+            <div class="card__head"><h2>Книги в каталоге</h2><button class="btn btn--primary">+ Добавить книгу</button></div>
+            <table class="table">
+                <thead><tr><th>Название</th><th>Автор</th><th>Жанр</th><th>Год</th><th>Статус</th><th></th></tr></thead>
+                <tbody>
+                    <tr><td>«Война и мир»</td><td>Л. Н. Толстой</td><td>Роман</td><td>1869</td><td><span class="badge badge--success">В наличии</span></td><td><button class="btn btn--primary" style="padding:5px 10px;font-size:11px">Выдать</button></td></tr>
+                    <tr><td>«1984»</td><td>Дж. Ордуэлл</td><td>Антиутопия</td><td>1949</td><td><span class="badge badge--danger">Выдана</span></td><td><button class="btn btn--outline" style="padding:5px 10px;font-size:11px">Вернуть</button></td></tr>
+                    <tr><td>«Мастер и Маргарита»</td><td>М. А. Булгаков</td><td>Роман</td><td>1967</td><td><span class="badge badge--success">В наличии</span></td><td><button class="btn btn--primary" style="padding:5px 10px;font-size:11px">Выдать</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<script>
+var login=localStorage.getItem('urus_login');
+if(login){document.getElementById('userLogin').textContent=login;document.getElementById('userInitials').textContent=login.substring(0,2).toUpperCase()}
+</script>
+</body>
+</html>

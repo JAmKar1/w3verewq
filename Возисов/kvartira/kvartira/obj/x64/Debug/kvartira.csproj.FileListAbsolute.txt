@@ -1,0 +1,10 @@
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\bin\x64\Debug\kvartira.exe.config
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\bin\x64\Debug\kvartira.exe
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\bin\x64\Debug\kvartira.pdb
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\obj\x64\Debug\kvartira.csproj.AssemblyReference.cache
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\obj\x64\Debug\kvartira.Form1.resources
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\obj\x64\Debug\kvartira.Properties.Resources.resources
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\obj\x64\Debug\kvartira.csproj.GenerateResource.cache
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\obj\x64\Debug\kvartira.csproj.CoreCompileInputs.cache
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\obj\x64\Debug\kvartira.exe
+\\192.168.3.250\Veda\4 Курс\ИСП 41\МДК 07.01\Овчинников Возисов 7\Возисов\kvartira\kvartira\obj\x64\Debug\kvartira.pdb

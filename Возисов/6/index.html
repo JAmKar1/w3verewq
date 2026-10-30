@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URUS — Вход</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Open Sans',Arial,sans-serif;background:#1E3A5F;color:#333;font-size:14px;line-height:1.45;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:#fff;border-radius:8px;padding:28px;width:100%;max-width:380px;box-shadow:0 4px 16px rgba(30,58,95,.12)}
+.login-card__logo{text-align:center;margin-bottom:4px;font-family:'Montserrat',Arial,sans-serif;font-weight:700;font-size:1.6rem;color:#1E3A5F;letter-spacing:2px}
+.login-card__subtitle{text-align:center;color:#6B7280;font-size:12px;margin-bottom:24px}
+.login-card__footer{text-align:center;color:#6B7280;font-size:11px;margin-top:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:#6B7280;margin-bottom:5px;font-weight:600}
+.field input{width:100%;padding:9px 11px;border:1px solid #E5E7EB;border-radius:6px;outline:none;font-size:13px}
+.field input:focus{border-color:#2980B9;box-shadow:0 0 0 3px rgba(41,128,185,.12)}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 14px;border-radius:6px;border:1px solid transparent;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn--primary{background:#2980B9;color:#fff}
+.btn--primary:hover{background:#2471A3}
+.btn--block{width:100%}
+.flash{padding:10px 14px;border-radius:6px;margin-bottom:14px;font-size:13px;display:none}
+.flash.show{display:block}
+.flash--error{background:#FDECEA;color:#B03A2E;border:1px solid #F5C6CB}
+</style>
+</head>
+<body>
+<div class="login-card">
+    <div class="login-card__logo">URUS</div>
+    <p class="login-card__subtitle">Библиотечный учёт</p>
+    <div class="flash flash--error" id="loginError"></div>
+    <div class="field">
+        <label>Логин</label>
+        <input type="text" id="loginInput" placeholder="Введите логин">
+    </div>
+    <div class="field">
+        <label>Пароль</label>
+        <input type="password" id="passwordInput" placeholder="Введите пароль">
+    </div>
+    <button class="btn btn--primary btn--block" onclick="doLogin()">Войти</button>
+    <p class="login-card__footer">Демо: admin / admin123</p>
+</div>
+<script>
+function doLogin(){
+    var login=document.getElementById('loginInput').value.trim();
+    var pass=document.getElementById('passwordInput').value.trim();
+    var err=document.getElementById('loginError');
+    if(!login||!pass){err.textContent='Заполните все поля';err.classList.add('show');return}
+    err.classList.remove('show');
+    localStorage.setItem('urus_login',login);
+    window.location.href='dashboard.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="kvartira/kvartira.csproj" Id="4254f67f-9911-494f-95d5-9c6162474c08">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+</Solution>
