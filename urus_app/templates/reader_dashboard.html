@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Мои книги — URUS{% endblock %}
+{% block content %}
+<h1 class="page-title">Мои книги</h1>
+<p class="page-subtitle">Личный кабинет читателя</p>
+
+{% if reader %}
+<div class="card">
+    <h2>Профиль читателя</h2>
+    <div class="table-wrap">
+        <table>
+            <tbody>
+                <tr>
+                    <td data-label="ФИО">{{ reader['full_name'] }}</td>
+                </tr>
+                <tr>
+                    <td data-label="Телефон">{{ reader['phone'] }}</td>
+                </tr>
+                <tr>
+                    <td data-label="Дата регистрации">{{ reader['registered_at'][:10] }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <h2>Книги на руках и история</h2>
+    {% if reader and loans %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Книга</th>
+                    <th>Автор</th>
+                    <th>Выдана</th>
+                    <th>Срок возврата</th>
+                    <th>Возвращена</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for loan in loans %}
+                <tr>
+                    <td data-label="Книга">{{ loan['title'] }}</td>
+                    <td data-label="Автор">{{ loan['author'] }}</td>
+                    <td data-label="Выдана">{{ loan['issued_at'] }}</td>
+                    <td data-label="Срок возврата">{{ loan['due_at'] }}</td>
+                    <td data-label="Возвращена">{{ loan['returned_at'] or '—' }}</td>
+                    <td data-label="Статус">
+                        {% if loan['returned_at'] %}
+                            <span class="badge badge--success">Возвращена</span>
+                        {% elif loan['due_at'] < today %}
+                            <span class="badge badge--danger">Просрочена</span>
+                        {% else %}
+                            <span class="badge badge--warning">На руках</span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Действие">
+                        {% if not loan['returned_at'] and loan['due_at'] >= today and loan['renewals'] < 1 %}
+                        <form method="post" action="{{ url_for('renew_loan', loan_id=loan['loan_id']) }}">
+                            <button type="submit" class="btn btn--outline btn--sm">Продлить</button>
+                        </form>
+                        {% elif not loan['returned_at'] and loan['renewals'] >= 1 %}
+                            <span class="badge badge--muted">Продлена</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% elif reader %}
+    <p class="empty">Выдач не зафиксировано</p>
+    {% else %}
+    <p class="empty">Профиль читателя не найден. Обратитесь к сотруднику библиотеки</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Мои заявки</h2>
+    {% if reader and reservations %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Книга</th>
+                    <th>Автор</th>
+                    <th>Дата заявки</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in reservations %}
+                <tr>
+                    <td data-label="Книга">{{ res['title'] }}</td>
+                    <td data-label="Автор">{{ res['author'] }}</td>
+                    <td data-label="Дата заявки">{{ res['created_at'][:16] }}</td>
+                    <td data-label="Статус">
+                        {% if res['status'] == 'new' %}
+                            <span class="badge badge--warning">Новая</span>
+                        {% elif res['status'] == 'approved' %}
+                            <span class="badge badge--success">Одобрена</span>
+                        {% else %}
+                            <span class="badge badge--muted">Отклонена</span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Действие">
+                        {% if res['status'] == 'new' %}
+                        <form method="post" action="{{ url_for('cancel_reservation', res_id=res['id']) }}">
+                            <button type="submit" class="btn btn--ghost btn--sm">Отменить</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty">Заявок нет. Забронировать книгу можно в каталоге</p>
+    {% endif %}
+</div>
+{% endblock %}

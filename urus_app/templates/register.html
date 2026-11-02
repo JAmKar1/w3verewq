@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Регистрация — URUS{% endblock %}
+{% block body %}
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="logo">URUS<span>Библиотечный учёт</span></div>
+        <p class="login-sub">Регистрация читателя</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash flash--{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('register') }}">
+            <div class="field">
+                <label for="full_name">ФИО</label>
+                <input type="text" id="full_name" name="full_name" required autofocus>
+            </div>
+            <div class="field">
+                <label for="phone">Телефон</label>
+                <input type="text" id="phone" name="phone" placeholder="+7 (___) ___-__-__" required>
+            </div>
+            <div class="field">
+                <label for="login">Логин</label>
+                <input type="text" id="login" name="login" required>
+            </div>
+            <div class="field">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="field">
+                <label for="confirm_password">Подтверждение пароля</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            <button type="submit" class="btn btn--primary btn--block">Зарегистрироваться</button>
+        </form>
+
+        <p class="login-sub" style="margin-top:16px; margin-bottom:0;">
+            Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}Каталог — URUS{% endblock %}
+{% block content %}
+<h1 class="page-title">Каталог изданий</h1>
+<p class="page-subtitle">Поиск и фильтрация библиотечного фонда</p>
+
+<div class="card">
+    <form method="get" action="{{ url_for('catalog') }}">
+        <div class="filters">
+            <div class="field">
+                <label for="search">Поиск</label>
+                <input type="text" id="search" name="search" value="{{ search }}" placeholder="Название или автор">
+            </div>
+            <div class="field">
+                <label for="genre">Жанр</label>
+                <select id="genre" name="genre">
+                    <option value="">Все жанры</option>
+                    {% for g in genres %}
+                    <option value="{{ g['genre'] }}" {{ 'selected' if genre == g['genre'] }}>{{ g['genre'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label for="status">Статус</label>
+                <select id="status" name="status">
+                    <option value="">Все статусы</option>
+                    <option value="available" {{ 'selected' if status == 'available' }}>В наличии</option>
+                    <option value="issued" {{ 'selected' if status == 'issued' }}>Выдана</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn--primary">Найти</button>
+            <a href="{{ url_for('catalog') }}" class="btn btn--ghost">Сбросить</a>
+        </div>
+    </form>
+</div>
+
+{% if current_user_role != 'reader' %}
+<div class="card">
+    <div class="card-head">
+        <h2>Добавить издание</h2>
+    </div>
+    <form method="post" action="{{ url_for('add_book') }}">
+        <div class="filters">
+            <div class="field">
+                <label for="title">Название</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="field">
+                <label for="author">Автор</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+            <div class="field">
+                <label for="genre">Жанр</label>
+                <input type="text" id="genre" name="genre" required>
+            </div>
+            <div class="field">
+                <label for="year">Год</label>
+                <input type="number" id="year" name="year" min="0" max="2100">
+            </div>
+            <button type="submit" class="btn btn--primary">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Добавить издание
+            </button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<div class="card">
+    {% if books %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Автор</th>
+                    <th>Жанр</th>
+                    <th>Год</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td data-label="Название">{{ book['title'] }}</td>
+                    <td data-label="Автор">{{ book['author'] }}</td>
+                    <td data-label="Жанр">{{ book['genre'] }}</td>
+                    <td data-label="Год">{{ book['year'] }}</td>
+                    <td data-label="Статус">
+                        {% if book['status'] == 'available' %}
+                            <span class="badge badge--success">В наличии</span>
+                        {% else %}
+                            <span class="badge badge--warning">Выдана</span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Действие">
+                        {% if current_user_role == 'reader' %}
+                            {% if book['status'] == 'available' %}
+                            <form method="post" action="{{ url_for('reserve_book', book_id=book['id']) }}">
+                                <button type="submit" class="btn btn--primary btn--sm">Забронировать</button>
+                            </form>
+                            {% else %}
+                                <span class="badge badge--muted">На руках</span>
+                            {% endif %}
+                        {% elif book['status'] == 'available' %}
+                        <form method="post" action="{{ url_for('issue_book', book_id=book['id']) }}">
+                            <button type="submit" class="btn btn--primary btn--sm">Выдать</button>
+                        </form>
+                        {% else %}
+                        <form method="post" action="{{ url_for('return_book', book_id=book['id']) }}">
+                            <button type="submit" class="btn btn--outline btn--sm">Вернуть</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty">По заданным условиям ничего не найдено</p>
+    {% endif %}
+</div>
+{% endblock %}

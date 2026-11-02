@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Просрочки — URUS{% endblock %}
+{% block content %}
+<h1 class="page-title">Просрочки</h1>
+<p class="page-subtitle">Издания, не возвращённые в срок</p>
+
+<div class="card">
+    {% if overdue_list %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Читатель</th>
+                    <th>Телефон</th>
+                    <th>Книга</th>
+                    <th>Срок возврата</th>
+                    <th>Просрочка</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in overdue_list %}
+                <tr>
+                    <td data-label="Читатель">{{ row.full_name }}</td>
+                    <td data-label="Телефон">{{ row.phone }}</td>
+                    <td data-label="Книга">{{ row.title }}</td>
+                    <td data-label="Срок возврата">{{ row.due_at }}</td>
+                    <td data-label="Просрочка">
+                        <span class="badge badge--danger">{{ row.days }} дн.</span>
+                    </td>
+                    <td data-label="Действие">
+                        <button type="button" class="btn btn--outline btn--sm"
+                                onclick="showToast('Связь: {{ row.full_name }}, {{ row.phone }}')">Связаться</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty">Просроченных выдач нет</p>
+    {% endif %}
+</div>
+{% endblock %}

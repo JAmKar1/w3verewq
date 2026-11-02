@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+{% block title %}Вход — URUS{% endblock %}
+{% block body %}
+<style>
+    /* --- Чекбокс "Я не робот" --- */
+    .robot-check {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        cursor: pointer;
+        user-select: none;
+        transition: border-color .15s;
+    }
+
+    .robot-check:hover {
+        border-color: var(--accent);
+    }
+
+    .robot-check input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .robot-check span {
+        font-size: 13px;
+        color: var(--text);
+    }
+
+    .robot-check.done {
+        border-color: var(--success);
+        background: rgba(30, 126, 52, .05);
+    }
+
+    /* --- Модальное окно капчи --- */
+    .captcha-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, .45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 200;
+    }
+
+    .captcha-modal-overlay.open {
+        display: flex;
+    }
+
+    .captcha-note {
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 10px;
+    }
+
+    .captcha-modal {
+        background: var(--surface);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+        padding: 20px;
+        width: 260px;
+        text-align: center;
+    }
+
+    .captcha-modal h3 {
+        font-size: 14px;
+        margin-bottom: 12px;
+        color: var(--primary);
+    }
+
+    .captcha-modal-actions {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+</style>
+
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="logo">URUS<span>Библиотечный учёт</span></div>
+        <p class="login-sub">Войдите, чтобы продолжить работу</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash flash--{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('login') }}" id="loginForm">
+            <div class="field">
+                <label for="login">Логин</label>
+                <input type="text" id="login" name="login" required autofocus>
+            </div>
+            <div class="field">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="robot-check" id="robotCheck">
+                <input type="checkbox" id="robotCheckbox" onchange="openCaptcha()">
+                <span id="robotLabel">Я не робот</span>
+            </div>
+            <p class="captcha-note">После нажатия откроется проверка: расставьте фрагменты по номерам 1–4</p>
+            <input type="hidden" name="captcha_solved" id="captchaSolved" value="false">
+
+            <button type="submit" class="btn btn--primary btn--block">Войти</button>
+        </form>
+
+        <p class="login-sub" style="margin-top:16px; margin-bottom:0;">
+            Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрироваться как читатель</a>
+        </p>
+    </div>
+</div>
+
+<!-- Модальное окно с пазлом -->
+<div class="captcha-modal-overlay" id="captchaOverlay">
+    <div class="captcha-modal">
+        <h3>Расставьте по номерам</h3>
+        <style>
+            .captcha-grid {
+                display: grid;
+                grid-template-columns: 78px 78px;
+                grid-template-rows: 78px 78px;
+                gap: 4px;
+                padding: 4px;
+                background: var(--border);
+                border-radius: 8px;
+                width: 160px;
+                height: 160px;
+                margin: 0 auto;
+            }
+
+            .captcha-piece {
+                background-size: 100% 100%;
+                background-repeat: no-repeat;
+                background-position: center center;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: transform .15s, box-shadow .15s;
+                border: none;
+                padding: 0;
+                position: relative;
+            }
+
+            .captcha-piece .num {
+                position: absolute;
+                top: 3px;
+                left: 3px;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: rgba(30, 58, 95, .85);
+                color: #fff;
+                font-size: 12px;
+                font-weight: 700;
+                line-height: 20px;
+                text-align: center;
+                pointer-events: none;
+            }
+
+            .captcha-piece.piece-0 { background-image: url("{{ url_for('static', filename='img/piece-0.png') }}"); }
+            .captcha-piece.piece-1 { background-image: url("{{ url_for('static', filename='img/piece-1.png') }}"); }
+            .captcha-piece.piece-2 { background-image: url("{{ url_for('static', filename='img/piece-2.png') }}"); }
+            .captcha-piece.piece-3 { background-image: url("{{ url_for('static', filename='img/piece-3.png') }}"); }
+
+            .captcha-piece:hover {
+                transform: scale(1.03);
+                box-shadow: 0 0 0 2px var(--accent);
+                z-index: 1;
+            }
+
+            .captcha-piece.selected {
+                box-shadow: 0 0 0 3px var(--warning);
+                transform: scale(1.05);
+                z-index: 2;
+            }
+
+            .captcha-piece.solved {
+                box-shadow: 0 0 0 2px var(--success);
+                cursor: default;
+            }
+
+            .captcha-piece.swapping {
+                transform: scale(0.85);
+            }
+
+            .captcha-hint {
+                font-size: 12px;
+                color: var(--muted);
+                margin-top: 8px;
+            }
+
+            .captcha-hint.ok {
+                color: var(--success);
+                font-weight: 600;
+            }
+        </style>
+
+        <div class="captcha-grid" id="captchaGrid"></div>
+        <div class="captcha-hint" id="captchaHint">Кликните по двум фрагментам, чтобы поменять их местами</div>
+
+        <div class="captcha-modal-actions">
+            <button type="button" class="btn btn--outline" onclick="closeCaptcha(false)">Отмена</button>
+            <button type="button" class="btn btn--primary" onclick="confirmCaptcha()">Подтвердить</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var SLOT_COUNT = 4;
+    var grid = document.getElementById('captchaGrid');
+    var hint = document.getElementById('captchaHint');
+    var overlay = document.getElementById('captchaOverlay');
+    var solvedField = document.getElementById('captchaSolved');
+    var robotCheck = document.getElementById('robotCheck');
+    var robotCheckbox = document.getElementById('robotCheckbox');
+    var robotLabel = document.getElementById('robotLabel');
+
+    var slots = [];        // slots[позиция] = номер картинки (0..3)
+    var selectedSlot = null;
+    var solved = false;
+    var confirmed = false;
+    var lockClicks = false;
+
+    function shuffle() {
+        // Перемешивание с гарантией, что пазл НЕ собран изначально
+        do {
+            slots = [0, 1, 2, 3];
+            for (var i = slots.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var tmp = slots[i];
+                slots[i] = slots[j];
+                slots[j] = tmp;
+            }
+        } while (slots.every(function (piece, slot) { return piece === slot; }));
+    }
+
+    function render() {
+        grid.innerHTML = '';
+        slots.forEach(function (pieceIndex, slot) {
+            var piece = document.createElement('div');
+            piece.className = 'captcha-piece piece-' + pieceIndex;
+            piece.dataset.slot = slot;
+            piece.dataset.num = pieceIndex;
+
+            var num = document.createElement('span');
+            num.className = 'num';
+            num.textContent = pieceIndex + 1;
+            piece.appendChild(num);
+
+            if (slot === selectedSlot) piece.classList.add('selected');
+            if (solved) piece.classList.add('solved');
+            grid.appendChild(piece);
+        });
+    }
+
+    function isSolved() {
+        // Пазл собран, если номера идут по порядку: слот 0 — картинка 1, слот 1 — картинка 2 и т.д.
+        return slots.every(function (piece, slot) { return piece === slot; });
+    }
+
+    grid.addEventListener('click', function (e) {
+        if (solved || lockClicks) return;
+        var target = e.target.closest('.captcha-piece');
+        if (!target) return;
+
+        var slot = parseInt(target.dataset.slot, 10);
+
+        if (selectedSlot === null) {
+            selectedSlot = slot;
+            hint.textContent = 'Выберите второй фрагмент';
+            render();
+            return;
+        }
+
+        if (selectedSlot === slot) {
+            selectedSlot = null;
+            hint.textContent = 'Кликните по двум фрагментам, чтобы поменять их местами';
+            render();
+            return;
+        }
+
+        var a = selectedSlot, b = slot;
+        selectedSlot = null;
+        lockClicks = true;
+        hint.textContent = 'Кликните по двум фрагментам, чтобы поменять их местами';
+
+        var elA = grid.children[a], elB = grid.children[b];
+        elA.classList.add('swapping');
+        elB.classList.add('swapping');
+
+        setTimeout(function () {
+            var tmp = slots[a];
+            slots[a] = slots[b];
+            slots[b] = tmp;
+            if (isSolved()) {
+                solved = true;
+                hint.textContent = 'Порядок 1-2-3-4 собран. Нажмите «Подтвердить»';
+                hint.classList.add('ok');
+            }
+            render();
+            lockClicks = false;
+        }, 150);
+    });
+
+    function openCaptcha() {
+        if (confirmed) {
+            confirmed = false;
+            solvedField.value = 'false';
+            robotLabel.textContent = 'Я не робот';
+            robotCheck.classList.remove('done');
+            robotCheckbox.checked = false;
+        }
+        shuffle();
+        solved = false;
+        selectedSlot = null;
+        lockClicks = false;
+        hint.textContent = 'Расставьте фрагменты по номерам: 1, 2, 3, 4';
+        hint.classList.remove('ok');
+        overlay.classList.add('open');
+        render();
+    }
+
+    function closeCaptcha() {
+        overlay.classList.remove('open');
+        robotCheckbox.checked = false;
+    }
+
+    function confirmCaptcha() {
+        if (!isSolved()) {
+            hint.textContent = 'Порядок неверный — фрагменты должны идти 1, 2, 3, 4';
+            hint.classList.remove('ok');
+            return;
+        }
+        overlay.classList.remove('open');
+        confirmed = true;
+        solvedField.value = 'true';
+        robotCheckbox.checked = true;
+        robotLabel.textContent = 'Подтверждено: вы не робот';
+        robotCheck.classList.add('done');
+    }
+
+    shuffle();
+    render();
+</script>
+{% endblock %}

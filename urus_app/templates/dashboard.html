@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Рабочий стол — URUS{% endblock %}
+{% block content %}
+<h1 class="page-title">Рабочий стол</h1>
+<p class="page-subtitle">Сводка по работе библиотеки за сегодня</p>
+
+<div class="stats">
+    <div class="stat">
+        <div class="stat__label">Выдано за сегодня</div>
+        <div class="stat__value">{{ issued_today }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat__label">Возвращено</div>
+        <div class="stat__value">{{ returned_today }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat__label">Просрочено</div>
+        <div class="stat__value">{{ overdue_count }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat__label">Читателей в базе</div>
+        <div class="stat__value">{{ readers_total }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Требуют внимания</h2>
+    <div class="attention">
+        <span class="badge badge--danger">Просрочено: {{ overdue_badge }}</span>
+        <span class="badge badge--warning">Истекает: {{ expiring }}</span>
+        <span class="badge badge--muted">Заявка: {{ requests_count }}</span>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Операции</h2>
+    <div class="operations">
+        <a href="{{ url_for('circulation') }}" class="btn btn--primary">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13"/><path d="m14 4 3 3-3 3"/></svg>
+            Выдать книгу
+        </a>
+        <a href="{{ url_for('circulation') }}" class="btn btn--outline">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17H7"/><path d="m10 14-3 3 3 3"/></svg>
+            Принять возврат
+        </a>
+        <a href="{{ url_for('readers') }}" class="btn btn--outline">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Зарегистрировать читателя
+        </a>
+        <a href="{{ url_for('catalog') }}" class="btn btn--outline">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить издание
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Журнал операций за сегодня</h2>
+    {% if journal %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Время</th>
+                    <th>Операция</th>
+                    <th>Издание</th>
+                    <th>Читатель</th>
+                    <th>Сотрудник</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in journal %}
+                <tr>
+                    <td data-label="Время">{{ row['created_at'][11:16] }}</td>
+                    <td data-label="Операция">{{ row['operation'] }}</td>
+                    <td data-label="Издание">{{ row['book_title'] or '—' }}</td>
+                    <td data-label="Читатель">{{ row['reader_name'] or '—' }}</td>
+                    <td data-label="Сотрудник">{{ row['employee'] or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty">Операций за сегодня не зафиксировано</p>
+    {% endif %}
+</div>
+{% endblock %}

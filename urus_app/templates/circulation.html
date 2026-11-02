@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Выдача и возврат — URUS{% endblock %}
+{% block content %}
+<h1 class="page-title">Выдача и возврат</h1>
+<p class="page-subtitle">Оформление движения изданий</p>
+
+<div class="card">
+    <div class="tabs">
+        <button class="tab active" data-target="tab-issue">Выдать книгу</button>
+        <button class="tab" data-target="tab-return">Вернуть книгу</button>
+    </div>
+
+    <div class="tab-content active" id="tab-issue">
+        <form method="post" action="{{ url_for('circulation_issue') }}">
+            <div class="field">
+                <label for="issue_book">Книга</label>
+                <select id="issue_book" name="book_id" required>
+                    <option value="">Выберите книгу</option>
+                    {% for book in books if book['status'] == 'available' %}
+                    <option value="{{ book['id'] }}">{{ book['title'] }} — {{ book['author'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label for="issue_reader">Читатель</label>
+                <select id="issue_reader" name="reader_id" required>
+                    <option value="">Выберите читателя</option>
+                    {% for reader in readers %}
+                    <option value="{{ reader['id'] }}">{{ reader['full_name'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label>Сотрудник</label>
+                <input type="text" value="{{ current_user_login }}" disabled>
+            </div>
+            <div class="field">
+                <label for="issued_at">Дата выдачи</label>
+                <input type="date" id="issued_at" name="issued_at" required>
+            </div>
+            <div class="field">
+                <label for="due_at">Дата возврата</label>
+                <input type="date" id="due_at" name="due_at" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Оформить</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn--ghost">Отмена</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="tab-content" id="tab-return">
+        <form method="post" action="{{ url_for('circulation_return') }}">
+            <div class="field">
+                <label for="return_book">Книга</label>
+                <select id="return_book" name="book_id" required>
+                    <option value="">Выберите книгу</option>
+                    {% for book in books if book['status'] == 'issued' %}
+                    <option value="{{ book['id'] }}">{{ book['title'] }} — {{ book['author'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label>Сотрудник</label>
+                <input type="text" value="{{ current_user_login }}" disabled>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Оформить</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn--ghost">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

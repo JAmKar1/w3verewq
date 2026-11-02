@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}URUS — Библиотечный учёт{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+{% block body %}
+<header class="topbar">
+    <button class="burger" id="burger" aria-label="Меню">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+    </button>
+    <div class="logo">URUS<span>Библиотечный учёт</span></div>
+    <div class="topbar__user">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.9 3.1-6 7-6s7 2.1 7 6"/>
+        </svg>
+        <span class="topbar__name">{{ current_user_login }}</span>
+        <span class="badge {% if current_user_role == 'admin' %}badge--admin{% elif current_user_role == 'reader' %}badge--reader{% else %}badge--user{% endif %}">{% if current_user_role == 'admin' %}Администратор{% elif current_user_role == 'reader' %}Читатель{% else %}Сотрудник{% endif %}</span>
+        <a href="{{ url_for('logout') }}" class="btn btn--ghost" style="color:#fff;">Выход</a>
+    </div>
+</header>
+
+<div class="layout">
+    <aside class="sidebar" id="sidebar">
+        {% if current_user_role == 'reader' %}
+        <div class="sidebar__group">
+            <div class="sidebar__title">Читатель</div>
+            <a href="{{ url_for('reader_dashboard') }}" class="{{ 'active' if page == 'reader' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h13"/>
+                </svg>
+                Мои книги
+            </a>
+            <a href="{{ url_for('catalog') }}" class="{{ 'active' if page == 'catalog' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h13"/>
+                </svg>
+                Каталог
+            </a>
+        </div>
+        {% else %}
+        <div class="sidebar__group">
+            <div class="sidebar__title">Работа</div>
+            <a href="{{ url_for('dashboard') }}" class="{{ 'active' if page == 'dashboard' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/>
+                </svg>
+                Рабочий стол
+            </a>
+            <a href="{{ url_for('requests_page') }}" class="{{ 'active' if page == 'requests' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M8 7h7"/><path d="M8 11h7"/>
+                </svg>
+                Заявки
+                {% if requests_badge %}<span class="badge badge--warning">{{ requests_badge }}</span>{% endif %}
+            </a>
+            <a href="{{ url_for('catalog') }}" class="{{ 'active' if page == 'catalog' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h13"/>
+                </svg>
+                Каталог
+            </a>
+            <a href="{{ url_for('readers') }}" class="{{ 'active' if page == 'readers' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <circle cx="9" cy="8" r="3"/><path d="M2.5 19c0-3.3 2.9-5 6.5-5s6.5 1.7 6.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.8 0 4.5 1.5 4.5 4"/>
+                </svg>
+                Читатели
+            </a>
+            <a href="{{ url_for('circulation') }}" class="{{ 'active' if page == 'circulation' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7h13"/><path d="m14 4 3 3-3 3"/><path d="M20 17H7"/><path d="m10 14-3 3 3 3"/>
+                </svg>
+                Выдача и возврат
+            </a>
+            <a href="{{ url_for('overdue') }}" class="{{ 'active' if page == 'overdue' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3 2.5 20h19z"/><line x1="12" y1="9" x2="12" y2="14"/><line x1="12" y1="17" x2="12" y2="17.01"/>
+                </svg>
+                Просрочки
+            </a>
+        </div>
+        {% endif %}
+        {% if current_user_role in ('user', 'admin') %}
+        <div class="sidebar__group">
+            <div class="sidebar__title">Аналитика</div>
+            <a href="{{ url_for('reports') }}" class="{{ 'active' if page == 'reports' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="10"/><line x1="3" y1="20" x2="21" y2="20"/>
+                </svg>
+                Отчёты
+            </a>
+        </div>
+        {% if current_user_role == 'admin' %}
+        <div class="sidebar__group">
+            <div class="sidebar__title">Администрирование</div>
+            <a href="{{ url_for('admin') }}" class="{{ 'active' if page == 'admin' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.9 3.1-6 7-6s7 2.1 7 6"/>
+                </svg>
+                Пользователи
+            </a>
+            <a href="{{ url_for('add_user') }}" class="{{ 'active' if page == 'add_user' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <circle cx="10" cy="8" r="3.5"/><path d="M3 20c0-3.9 3.1-6 7-6 1.5 0 2.8.3 3.9.9"/><line x1="18" y1="14" x2="18" y2="20"/><line x1="15" y1="17" x2="21" y2="17"/>
+                </svg>
+                Добавить пользователя
+            </a>
+        </div>
+        {% endif %}
+        {% endif %}
+        <div class="sidebar__group">
+            <a href="{{ url_for('change_password') }}" class="{{ 'active' if page == 'change_password' }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.35.95A7 7 0 0 0 14.1 5.4L13.7 3h-3.4l-.4 2.4a7 7 0 0 0-2.4 1.14L5.1 5.6l-2 3.46 2 1.55A7 7 0 0 0 5 12c0 .48.05.94.14 1.4l-2 1.55 2 3.46 2.35-.95a7 7 0 0 0 2.4 1.14l.4 2.4h3.4l.4-2.4a7 7 0 0 0 2.4-1.14l2.35.95 2-3.46-2-1.55c.09-.46.16-.92.16-1.4z"/>
+                </svg>
+                Смена пароля
+            </a>
+        </div>
+    </aside>
+
+    <main class="content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash flash--{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    var burger = document.getElementById('burger');
+    var sidebar = document.getElementById('sidebar');
+    if (burger && sidebar) {
+        burger.addEventListener('click', function () {
+            sidebar.classList.toggle('open');
+        });
+    }
+
+    function showToast(message) {
+        var toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(function () { toast.classList.remove('show'); }, 3000);
+    }
+
+    function initTabs() {
+        var tabs = document.querySelectorAll('.tab');
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                tabs.forEach(function (t) { t.classList.remove('active'); });
+                document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+            });
+        });
+    }
+    document.addEventListener('DOMContentLoaded', initTabs);
+</script>
+{% endblock %}
+</body>
+</html>

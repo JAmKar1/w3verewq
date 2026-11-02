@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Читатели — URUS{% endblock %}
+{% block content %}
+<h1 class="page-title">Читатели</h1>
+<p class="page-subtitle">Учёт читателей библиотеки</p>
+
+<div class="card">
+    <div class="card-head">
+        <h2>Поиск читателей</h2>
+    </div>
+    <form method="get" action="{{ url_for('readers') }}">
+        <div class="filters">
+            <div class="field">
+                <label for="search">ФИО или телефон</label>
+                <input type="text" id="search" name="search" value="{{ search }}" placeholder="Иванов или +7 (9...">
+            </div>
+            <button type="submit" class="btn btn--primary">Найти</button>
+            <a href="{{ url_for('readers') }}" class="btn btn--ghost">Сбросить</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-head">
+        <h2>Список читателей</h2>
+        <form method="post" action="{{ url_for('add_reader') }}" id="readerForm" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+            <div class="field" style="margin-bottom:0;">
+                <label for="full_name">ФИО</label>
+                <input type="text" id="full_name" name="full_name" required>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+                <label for="phone">Телефон</label>
+                <input type="text" id="phone" name="phone" required>
+            </div>
+            <button type="submit" class="btn btn--primary">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Зарегистрировать
+            </button>
+        </form>
+    </div>
+
+    {% if readers %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ФИО</th>
+                    <th>Телефон</th>
+                    <th>Дата регистрации</th>
+                    <th>Выдач</th>
+                    <th>Просрочек</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reader in readers %}
+                <tr>
+                    <td data-label="ФИО">{{ reader['full_name'] }}</td>
+                    <td data-label="Телефон">{{ reader['phone'] }}</td>
+                    <td data-label="Дата регистрации">{{ reader['registered_at'][:10] }}</td>
+                    <td data-label="Выдач">{{ reader['loans_count'] }}</td>
+                    <td data-label="Просрочек">
+                        {% if reader['overdue_count'] > 0 %}
+                            <span class="badge badge--danger">{{ reader['overdue_count'] }}</span>
+                        {% else %}
+                            <span class="badge badge--success">0</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty">Читатели не найдены</p>
+    {% endif %}
+</div>
+{% endblock %}

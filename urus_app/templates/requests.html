@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Заявки — URUS{% endblock %}
+{% block content %}
+<h1 class="page-title">Заявки читателей</h1>
+<p class="page-subtitle">Бронирование книг и выдача по подтверждению</p>
+
+<div class="card">
+    {% if requests %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Книга</th>
+                    <th>Автор</th>
+                    <th>Читатель</th>
+                    <th>Телефон</th>
+                    <th>Дата заявки</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in requests %}
+                <tr>
+                    <td data-label="Книга">{{ row['title'] }}</td>
+                    <td data-label="Автор">{{ row['author'] }}</td>
+                    <td data-label="Читатель">{{ row['full_name'] }}</td>
+                    <td data-label="Телефон">{{ row['phone'] }}</td>
+                    <td data-label="Дата заявки">{{ row['created_at'][:16] }}</td>
+                    <td data-label="Действия">
+                        <form method="post" action="{{ url_for('approve_request', res_id=row['id']) }}" style="display:inline;">
+                            <button type="submit" class="btn btn--primary btn--sm">Выдать</button>
+                        </form>
+                        <form method="post" action="{{ url_for('decline_request', res_id=row['id']) }}" style="display:inline;">
+                            <button type="submit" class="btn btn--ghost btn--sm">Отклонить</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty">Новых заявок нет</p>
+    {% endif %}
+</div>
+{% endblock %}

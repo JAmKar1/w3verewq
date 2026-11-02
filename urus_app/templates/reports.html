@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Отчёты — URUS{% endblock %}
+{% block content %}
+<h1 class="page-title">Отчёты</h1>
+<p class="page-subtitle">Формирование отчётности по работе библиотеки</p>
+
+<div class="card">
+    <h2>Доступные отчёты</h2>
+    <div class="operations">
+        <button type="button" class="btn btn--primary"
+                onclick="showToast('Отчёт «По выдачам» сформирован')">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="10"/><line x1="3" y1="20" x2="21" y2="20"/></svg>
+            По выдачам
+        </button>
+        <button type="button" class="btn btn--outline"
+                onclick="showToast('Отчёт «По фонду» сформирован')">
+            По фонду
+        </button>
+        <button type="button" class="btn btn--outline"
+                onclick="showToast('Экспорт CSV начат'); window.location='{{ url_for('export_report', report_type='loans') }}'">
+            Экспорт CSV
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Сведения</h2>
+    <p style="color: var(--muted);">
+        Отчёт «По выдачам» содержит историю выдач и возвратов.
+        Отчёт «По фонду» отражает состояние библиотечного фонда.
+        Экспорт CSV выгружает журнал выдач в файл для внешней обработки.
+    </p>
+</div>
+{% endblock %}
